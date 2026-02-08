@@ -28,18 +28,16 @@ def absint(i):
 
 class Strip():
 
-    def getColour(self,led):            # Return LED [1..12] colour as an array ([R,G,B])
-        if absint(led) >= NUM_LEDS:
-            return (0,0,0)
-        tvalue = tildagonos.leds[led+1]
-        return list(tvalue)
-    
+
+    ledCache = [(0,0,0)for y in range(NUM_LEDS)] 
+        
+       
     def getColorAsNumber(self,led):
         led = int(led)
         if absint(led) >= NUM_LEDS:
             return 0
         
-        col = list(tildagonos.leds[led+1])
+        col = list(self.ledCache[led])
         return self.createColourAsNumber(col[0], col[1], col[2])
     
     def setColourByNumber(self,led, colourValue):   # Set colour as number RRGGBB for led 0-nn
@@ -47,7 +45,7 @@ class Strip():
             return
         
         colour = ((colourValue & 0xff0000) >> 16, (colourValue & 0xff00)>> 8 , colourValue & 0xff)
-        st.led.set(led+1, colour)
+        self.ledCache[led] = colour
 
     def setPixelColour(self,led, r,g,b):   
         led = int(led)   
@@ -55,10 +53,16 @@ class Strip():
             return
         
         #print("R:", absint(r) ,"G", absint(g), "B",absint(b))
-        st.led.set(led+1, (absint(r),absint(g),absint(b)))
+        self.ledCache[led] = (absint(r),absint(g),absint(b))
         
     def createColourAsNumber(self,r,g,b):
         return (absint(r) * 0x010000) + (absint(g) * 0x0100) + absint(b)
+    
+    def deployLeds(self):
+        for i in range( NUM_LEDS):
+            st.led.set(i+1, self.ledCache[i])
+
+
     
 theLedStrip = Strip()
 
@@ -439,7 +443,7 @@ def Traffic():
 ##########################################################################################
 
 def visualize():
-    Glitter()
+    Traffic()
 
 ###########################################################################################
 
@@ -659,6 +663,7 @@ class first(app.App):
     def update(self, delta):
         while True:
             self.dodraw(delta)
+            theLedStrip.deployLeds()
             time.sleep(0.02)
         
 
