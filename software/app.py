@@ -1,12 +1,12 @@
 
 import app
 import simple_tildagon as st
-
+from system.eventbus import eventbus
 from tildagonos import tildagonos, led_colours
 from system.eventbus import eventbus
 from system.patterndisplay.events import *
 
-from events.input import Buttons, BUTTON_TYPES
+from events.input import Buttons, BUTTON_TYPES, ButtonDownEvent
 from system.hexpansion.config import *
 from machine import Pin, ADC
 import time
@@ -16,8 +16,10 @@ import math
 
 NUM_LEDS = 12
 LED_HALF = int(NUM_LEDS / 2)
+VISUALS = 5     # The number of different visual effects
 hexpansion_configa = None
 audioIn = None
+effectName = ""
 #########################################################################################
 def absint(i):
     i = int(i)
@@ -274,7 +276,7 @@ def ColorPalette(num):
 
 ##########################################################################################
 
-def paintball():
+def Paintball():
   global bump
   global timeBump
   global palette
@@ -443,8 +445,48 @@ def Traffic():
 ##########################################################################################
 
 def visualize():
-    Traffic()
-
+    if visual == 0:
+        Traffic()
+        return
+    
+    if visual == 1:
+        Paintball()
+        return
+    
+    if visual == 2:
+        PaletteDance()
+        return    
+    
+    if visual == 3:
+        Glitter()
+        return
+    
+    if visual == 4:
+        Pulse()
+        return
+    
+    # Default
+    Pulse()
+    
+def getEffectName():
+    if visual == 0:
+        return "Traffic"
+    
+    if visual == 1:
+        return "Paintball"
+    
+    if visual == 2:
+        return  "PaletteDance"
+    
+    if visual == 3:
+        return "Glitter"
+    
+    if visual == 4:
+        return "Pulse"
+    
+    # Default
+    return "Pulse"
+        
 ###########################################################################################
 
 def rainbowCycle():
@@ -590,7 +632,42 @@ class first(app.App):
         self.button_states = Buttons(self)      
         eventbus.emit(PatternDisable())
         self.delay = 6  # Every 30ms
+   
 
+
+    def CycleVisual(self):
+        global visual
+        global gradient
+        global pos
+        global dotPos
+        global maxVol
+
+        #IMPORTANT: Delete this whole if-block if you didn't use buttons//////////////////////////////////
+        if self.button_states.get(BUTTON_TYPES["UP"]):
+            visual += 1     #The purpose of this button: change the visual mode
+            self.button_states.clear()
+        else:
+            return            
+
+        gradient = 0; #Prevent overflow
+
+        #Resets "visual" if there are no more visuals to cycle through.
+        if visual > VISUALS:
+            visual = 0
+
+        print("New visual is ", visual)    
+         
+        #Resets the positions of all dots to nonexistent (-2) if you cycle to the Traffic() visual.
+        if visual == 1:# memset(pos, -2, sizeof(pos));
+            for i in range(NUM_LEDS):
+                pos[i] = -2
+
+        #Gives Snake() and PaletteDance() visuals a random starting point if cycled to.
+        if visual == 2 or visual == 3: 
+            dotPos = random.randint(0, NUM_LEDS)
+    
+        maxVol = avgVol; #Set max volume to average for a fresh experience
+  
 
     def dodraw(self, delta):
         global maxVol
@@ -616,6 +693,7 @@ class first(app.App):
        # return
 
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
+            print("AAAAA")
             # The button_states do not update while you are in the background.  
             # Calling clear() ensures the next time you open the app, it stays
             # open. Without it the app would close again immediately.
@@ -661,19 +739,25 @@ class first(app.App):
         return False
 
     def update(self, delta):
+        pacer = 0
         while True:
             self.dodraw(delta)
             theLedStrip.deployLeds()
-            time.sleep(0.02)
+            self.CycleVisual()
+            pacer += 1
+            if pacer < 50:
+                time.sleep(0.02)
+            else:
+                return                
         
 
             
 
-
     def draw(self, ctx):
         ctx.save()
         ctx.rgb(0.2, 0, 0).rectangle(-120, -120, 240, 240).fill()
-        ctx.rgb(1, 0, 0).move_to(-80, 0).text("Hello world!!")
+        ctx.rgb(255,255,255).move_to(-80, 0).text("TGSTL:" )
+        ctx.rgb(255,255,255).move_to(-80, 40).text(getEffectName() )
         ctx.restore()
 
 __app_export__ = first
