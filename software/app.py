@@ -116,7 +116,8 @@ HSI = 3
 LOOP_LEDS = NUM_LEDS + 1
 DEFAULT_PORT = 4
 ADJUST_PIN  = HSH      
-AUDIO_IN_PIN = HSI     
+AUDIO_IN_PIN = HSI  
+KNOB_RAINBOW_ENABLE = 0.02   
 
 audioIn = None
 hexpansion_config = HexpansionConfig(DEFAULT_PORT)  # Due to A/D use we are limited what hexpansion we can use
@@ -126,6 +127,7 @@ print("Using ADC pin ",hexpansion_config.pin[AUDIO_IN_PIN], "for audio in" )
 knobAnalogueIn = ADC(Pin(hexpansion_config.pin[ADJUST_PIN]))
 
 audioIn.atten(ADC.ATTN_11DB)
+knobAnalogueIn.atten(ADC.ATTN_11DB)
 
 
 
@@ -491,6 +493,11 @@ def Traffic():
 ##########################################################################################
 
 def visualize():
+ 
+    if knob < KNOB_RAINBOW_ENABLE:  # Wind the sensitivity knob all the way down to force get the rainbow effect
+        rainbowCycle()
+        return
+    
     if visual == 0:
         Traffic()
         return
@@ -519,6 +526,9 @@ def visualize():
     Pulse()
     
 def getEffectName():
+    if knob < KNOB_RAINBOW_ENABLE:
+        return "Rainbow"
+    
     if visual == 0:
         return "Traffic"
     
@@ -542,13 +552,15 @@ def getEffectName():
         
 ###########################################################################################
 
+
+rainbowJ = 0
 def rainbowCycle():
-    for j in range(256*5): # 5 cycles of all colors on wheel
+        global rainbowJ
         for i in range(0,NUM_LEDS):
-            theLedStrip.setColourByNumber(i, Wheel(((i * int(63 / NUM_LEDS)) + j) & 63))
-        j += 1
-        if j > (5*256):
-            j=0            
+            theLedStrip.setColourByNumber(i, Wheel(((i * int(63 / NUM_LEDS)) + rainbowJ) & 63))
+        rainbowJ += 1
+        if rainbowJ > (5*256):
+            rainbowJ=0            
 
 ######################################################################################
 
@@ -805,11 +817,9 @@ class TGSTL(app.App):
         volume = getADValue()
 
         knob = knobAnalogueIn.read_u16()
-        knob = map(knob,0,65535,0,1023)
-        knob = knob / 1023.0; #record how far the trimpot is twisted
-    #    print("knob is ", knob)
-       # return
-
+    
+        knob = knob / 65535; #record how far the trimpot is twisted
+        
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
             # The button_states do not update while you are in the background.  
             # Calling clear() ensures the next time you open the app, it stays
