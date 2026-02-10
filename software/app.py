@@ -14,6 +14,29 @@ import random
 import asyncio
 import math
 
+# EMF Camp Tilda badge sound to light application
+
+# This application uses the Sparkfun sound detector board (https://www.sparkfun.com/sparkfun-sound-detector.html)
+# to produce a half-decent sound to light display on the EMF camp (https://www.emfcamp.org/) 
+# Tildagon badge (https://tildagon.badge.emfcamp.org/) LEDs
+#
+# This code ported to Python from C for the Sparkfun LED visualizer (https://github.com/sparkfun/SparkFun-RGB-LED-Music-Sound-Visualizer-Arduino-Code)
+# code by Michael Bartlett. Ported Tony Goacher (https://github.com/tonygoacher/tildagon_soundtolight)
+# Licence as oroginal below.
+# I'm a C/C++ guy with no Python experience so please forgive my SNAFUs below!
+
+# SparkFun Addressable RGB LED Sound and Music Visualizer Tutorial Arduino Code
+# by: Michael Bartlett
+# SparkFun Electronics
+# date: 2/7/16
+# license: Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0)
+# Do whatever you'd like with this code, use it for any purpose.
+# Please attribute and keep this license.
+
+
+
+
+
 NUM_LEDS = 12
 LED_HALF = int(NUM_LEDS / 2)
 VISUALS = 5     # The number of different visual effects
@@ -626,7 +649,7 @@ def Pulse():
 
 ######################################################################################
 
-class first(app.App):
+class TGSTL(app.App):
     def __init__(self):
       
         self.button_states = Buttons(self)      
@@ -743,7 +766,7 @@ class first(app.App):
         while True:
             self.dodraw(delta)
             theLedStrip.deployLeds()
-            self.CycleVisual()
+            self.CycleVisual()  
             pacer += 1
             if pacer < 50:
                 time.sleep(0.02)
@@ -760,4 +783,4 @@ class first(app.App):
         ctx.rgb(255,255,255).move_to(-80, 40).text(getEffectName() )
         ctx.restore()
 
-__app_export__ = first
+__app_export__ = TGSTL
