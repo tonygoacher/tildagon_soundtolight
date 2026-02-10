@@ -881,7 +881,7 @@ class TGSTL(app.App):
 
     def draw(self, ctx):
         ctx.save()
-        ctx.image("apps/first/logo.jpg", -120, -120, 240, 240)
+        ctx.image("apps/tgstl/logo.jpg", -120, -120, 240, 240)
         ctx.restore()
         ctx.font_size = 30
         ctx.rgb(0,255,0).move_to(-65, 65).text(getEffectName() )
