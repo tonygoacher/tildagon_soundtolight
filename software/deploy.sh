@@ -2,9 +2,9 @@
 
 
 mpremote mkdir :/apps
-mpremote mkdir :/apps/first
+mpremote mkdir :/apps/tgstl
 
-mpremote fs cp app.py :/apps/first/
-mpremote fs cp metadata.json :/apps/first/
-mpremote fs cp tildagon.toml :/apps/first/
-mpremote fs cp logo.jpg :/apps/first/
+mpremote fs cp app.py :/apps/tgstl/
+mpremote fs cp metadata.json :/apps/tgstl/
+mpremote fs cp tildagon.toml :/apps/tgstl/
+mpremote fs cp logo.jpg :/apps/tgstl/
