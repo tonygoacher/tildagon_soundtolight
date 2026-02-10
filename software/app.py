@@ -130,6 +130,9 @@ timeBump = 0 #Holds the time (in runtime seconds) the last "bump" occurred.
 avgTime = 0
 left = False
 
+returnNow = 0   # Used to force the main loop to return for n iterations after a switch change
+                # to allow time for another switch press/LCD update
+
 pos = [-2] * NUM_LEDS
 
 
@@ -664,6 +667,7 @@ class TGSTL(app.App):
         global pos
         global dotPos
         global maxVol
+        global returnNow
 
         #IMPORTANT: Delete this whole if-block if you didn't use buttons//////////////////////////////////
         if self.button_states.get(BUTTON_TYPES["UP"]):
@@ -690,6 +694,7 @@ class TGSTL(app.App):
             dotPos = random.randint(0, NUM_LEDS)
     
         maxVol = avgVol; #Set max volume to average for a fresh experience
+        returnNow = 50
   
 
     def dodraw(self, delta):
@@ -706,7 +711,8 @@ class TGSTL(app.App):
         global volume
         global knob
         global knobAnalogueIn
-
+        
+        
         volume = getADValue()
 
         knob = knobAnalogueIn.read_u16()
@@ -762,15 +768,19 @@ class TGSTL(app.App):
         return False
 
     def update(self, delta):
+        global returnNow
+        global pacer
         pacer = 0
         while True:
             self.dodraw(delta)
             theLedStrip.deployLeds()
             self.CycleVisual()  
-            pacer += 1
-            if pacer < 50:
+            pacer += 1  # Ensure we return for background processing every now and then
+            if pacer < 50 and returnNow == 0:
                 time.sleep(0.02)
             else:
+                if returnNow != 0:
+                    returnNow -= 1
                 return                
         
 
