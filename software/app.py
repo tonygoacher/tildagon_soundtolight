@@ -59,7 +59,7 @@ print("Asset path", ASSET_PATH)
 
 NUM_LEDS = 12
 LED_HALF = int(NUM_LEDS / 2)
-VISUALS = 5     # The number of different visual effects
+VISUALS = 6     # The number of different visual effects
 hexpansion_configa = None
 audioIn = None
 effectName = ""
@@ -511,6 +511,10 @@ def visualize():
         Pulse()
         return
     
+    if visual == 5:
+        Snake()
+        return    
+    
     # Default
     Pulse()
     
@@ -529,6 +533,9 @@ def getEffectName():
     
     if visual == 4:
         return "Pulse"
+    
+    if visual == 5:
+        return "Snake"
     
     # Default
     return "Pulse"
@@ -665,8 +672,72 @@ def Pulse():
         #Compare the average colors as "brightness". Only overwrite dim colors so the fade effect is more apparent.
         if (avgCol > avgCol2):
              theLedStrip.setPixelColour(i,colors[0], colors[1], colors[2] )
-                     
 
+
+#####################################################################################
+def snakeDotPos():
+    global dotPos
+    if left:
+        dotPos -= 1
+    else:
+        dotPos += 1        
+
+
+######################################################################################
+
+def Snake():
+    global gradient
+    global left
+    global dotPos
+    
+    if bump:
+        #/Change color a little on a bump
+        gradient += thresholds[palette] / 30
+        #Change the direction the dot is going to create the illusion of "dancing."
+        left = not left
+  
+
+    fade(0.975) #Leave a trail behind the dot.
+
+    col = ColorPalette(-1) #Get the color at current "gradient."
+
+    #The dot should only be moved if there's sound happening.
+    #  Otherwise if noise starts and it's been moving, it'll appear to teleport.
+    if (volume > 0):
+
+        #Sets the dot to appropriate color and intensity
+        theLedStrip.setPixelColour(dotPos, 
+                                (split(col, 0)) * pow(volume / maxVol, 1.5) * knob,
+                                (split(col, 1)) * pow(volume / maxVol, 1.5) * knob,
+                                (split(col, 2)) * pow(volume / maxVol, 1.5) * knob)
+
+        #This is where "avgTime" comes into play.
+        #  That variable is the "average" amount of time between each "bump" detected.
+        #  So we can use that to determine how quickly the dot should move so it matches the tempo of the music.
+        #  The dot moving at normal loop speed is pretty quick, so it's the max speed if avgTime < 0.15 seconds.
+        #  Slowing it down causes the color to update, but only change position every other amount of loops.
+        print("acgtime", avgTime, "left ", left, "dotpos", dotPos, "grad", gradient % 3)
+        if (avgTime < 0.15):  
+            snakeDotPos()                                             
+        #    dotPos += (left) ? -1 : 1;
+        else:
+            if (avgTime >= 0.15 and avgTime < 0.5 and int(gradient % 2) == 0):
+                snakeDotPos()
+            else:
+                if (avgTime >= 0.5 and avgTime < 1.0 and int(gradient % 3) == 0):    
+                    snakeDotPos()
+                else: 
+                    if (int(gradient % 4) == 0):
+                        snakeDotPos()
+    
+
+
+    #Check if dot position is out of bounds.
+    if (dotPos < 0):
+        dotPos = NUM_LEDS - 1
+    else:
+       if (dotPos >= NUM_LEDS): 
+        dotPos = 0
 
 
 
@@ -699,13 +770,11 @@ class TGSTL(app.App):
         gradient = 0; #Prevent overflow
 
         #Resets "visual" if there are no more visuals to cycle through.
-        if visual > VISUALS:
+        if visual >= VISUALS:
             visual = 0
-
-        print("New visual is ", visual)    
-         
+          
         #Resets the positions of all dots to nonexistent (-2) if you cycle to the Traffic() visual.
-        if visual == 1:# memset(pos, -2, sizeof(pos));
+        if visual == 1:
             for i in range(NUM_LEDS):
                 pos[i] = -2
 
@@ -742,18 +811,12 @@ class TGSTL(app.App):
        # return
 
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
-            print("AAAAA")
             # The button_states do not update while you are in the background.  
             # Calling clear() ensures the next time you open the app, it stays
             # open. Without it the app would close again immediately.
             self.button_states.clear()
             self.minimise()
 
-
-        
-        # print("millis ", millis())
-
-        # rainbowCycle()
         if (volume < (avgVol / 2.0)) or volume < 15:
             volume = 0
         else:
