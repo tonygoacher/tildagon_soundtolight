@@ -13,6 +13,8 @@ import time
 import random
 import asyncio
 import math
+import sys
+import os
 
 # EMF Camp Tilda badge sound to light application
 
@@ -35,7 +37,25 @@ import math
 
 
 
-
+if sys.implementation.name == "micropython":
+    apps = os.listdir("/apps")
+    path = ""
+    for a in apps:
+        # This is important for apps deployed to the appstore
+        # The Snake app from naomi stored at
+        # https://github.com/npentrel/tildagon-snake/
+        # has all its files in the folder
+        # npentrel_tildagon_snake
+        if a == "github_user_github_repo_name":
+            path = "/apps/" + a
+    ASSET_PATH = path + "/assets/"
+else:
+    # while testing, put your files in the folder you are developing in,
+    # for example: example/streak.jpg
+    ASSET_PATH = "apps/example/"
+    
+    
+print("Asset path", ASSET_PATH)    
 
 NUM_LEDS = 12
 LED_HALF = int(NUM_LEDS / 2)
@@ -130,7 +150,7 @@ timeBump = 0 #Holds the time (in runtime seconds) the last "bump" occurred.
 avgTime = 0
 left = False
 
-returnNow = 0   # Used to force the main loop to return for n iterations after a switch change
+returnNow = 10   # Used to force the main loop to return for n iterations after a switch change
                 # to allow time for another switch press/LCD update
 
 pos = [-2] * NUM_LEDS
@@ -502,8 +522,8 @@ def getEffectName():
         return "Paintball"
     
     if visual == 2:
-        return  "PaletteDance"
-    
+        return  "ColourPlay"
+                
     if visual == 3:
         return "Glitter"
     
@@ -788,9 +808,10 @@ class TGSTL(app.App):
 
     def draw(self, ctx):
         ctx.save()
-        ctx.rgb(0.2, 0, 0).rectangle(-120, -120, 240, 240).fill()
-        ctx.rgb(255,255,255).move_to(-80, 0).text("TGSTL:" )
-        ctx.rgb(255,255,255).move_to(-80, 40).text(getEffectName() )
+        ctx.image("apps/first/logo.jpg", -120, -120, 240, 240)
+        ctx.restore()
+        ctx.font_size = 30
+        ctx.rgb(0,255,0).move_to(-65, 65).text(getEffectName() )
         ctx.restore()
 
 __app_export__ = TGSTL
