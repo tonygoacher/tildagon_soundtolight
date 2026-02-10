@@ -1,6 +1,6 @@
 [app]
 # The name of your app as displayed in the menu
-name = "First"
+name = "TGSTL"
 
 # The submenu where your app should appear.
 # One of: "Badge", "Music", "Media", "Apps", "Games"
@@ -18,20 +18,20 @@ menu = "Apps"
 
 [entry]
 # The name of your entry point `Application` class
-class = "first"
+class = "TGSTL"
 
 [metadata]
 # Your nickname.  Must be at most 32 characters!
-author = "Merlin Howse"
+author = "Tony Goacher"
 
 # License of your app as an SPDX identifier: <https://spdx.org/licenses/>
 license = "LGPL-3.0-only"
 
 # URL to the repository of your app.
-#url = "https://www.github.com/npentrel/tildagon-snake"
+#url = "https://github.com/tonygoacher/tildagon_soundtolight"
 
 # Description of your app.  Maximum 140 characters!
-description = "Simple spirit level aka bubble App"
+description = "Sound to light app using Sparkfun sound detector"
 
 # Version number of your app.  If you push a commit where this number is
 # increased, we interpret this as a new version being released.
