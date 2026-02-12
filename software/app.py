@@ -24,7 +24,7 @@ import os
 #
 # This code ported to Python from C for the Sparkfun LED visualizer (https://github.com/sparkfun/SparkFun-RGB-LED-Music-Sound-Visualizer-Arduino-Code)
 # code by Michael Bartlett. Ported Tony Goacher (https://github.com/tonygoacher/tildagon_soundtolight)
-# Licence as oroginal below.
+# Licence as orginal below.
 # I'm a C/C++ guy with no Python experience so please forgive my SNAFUs below!
 
 # SparkFun Addressable RGB LED Sound and Music Visualizer Tutorial Arduino Code
@@ -881,7 +881,7 @@ class TGSTL(app.App):
 
     def draw(self, ctx):
         ctx.save()
-        ctx.image("apps/first/logo.jpg", -120, -120, 240, 240)
+        ctx.image("apps/tgstl/logo.jpg", -120, -120, 240, 240)
         ctx.restore()
         ctx.font_size = 30
         ctx.rgb(0,255,0).move_to(-65, 65).text(getEffectName() )
