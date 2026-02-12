@@ -28,7 +28,7 @@ author = "Tony Goacher"
 license = "CC-BY-SA-4.0"
 
 # URL to the repository of your app.
-url = "https://github.com/tonygoacher/tildagon_soundtolight/releases/"
+url = "https://github.com/tonygoacher/tildagon_soundtolight/"
 
 # Description of your app.  Maximum 140 characters!
 description = "Sound to light app for the EMF camp tildagon badge using Sparkfun sound detector"
