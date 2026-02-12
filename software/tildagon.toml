@@ -25,16 +25,16 @@ class = "TGSTL"
 author = "Tony Goacher"
 
 # License of your app as an SPDX identifier: <https://spdx.org/licenses/>
-license = "LGPL-3.0-only"
+license = "CC-BY-SA-4.0"
 
 # URL to the repository of your app.
-#url = "https://github.com/tonygoacher/tildagon_soundtolight"
+url = "https://github.com/tonygoacher/tildagon_soundtolight/releases/"
 
 # Description of your app.  Maximum 140 characters!
-description = "Sound to light app using Sparkfun sound detector"
+description = "Sound to light app for the EMF camp tildagon badge using Sparkfun sound detector"
 
 # Version number of your app.  If you push a commit where this number is
 # increased, we interpret this as a new version being released.
 #
 # Version number must be an integer!
-version = "1.0.0"
+version = "1.0.1"
