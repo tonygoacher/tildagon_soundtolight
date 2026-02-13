@@ -37,4 +37,4 @@ description = "Sound to light app for the EMF camp tildagon badge using Sparkfun
 # increased, we interpret this as a new version being released.
 #
 # Version number must be an integer!
-version = "1.0.4"
+version = "1.0.6"
